@@ -39,7 +39,7 @@ proc sendSignal*(sig: cint) =
   if pipefds[][0] == 0: raise newException(Defect, "sendSignal called before init")
   discard write(pipefds[][1], cstring($sig), cint(len($sig)))
 
-proc init*(sigSet: SigSet): cint =
+proc init*(sigSet: sink SigSet): cint =
   if pipefds[][0] != 0: raise newException(Defect, "init called after init")
   if pipe(pipefds[]) == -1:
     return posix.errno
