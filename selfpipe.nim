@@ -1,3 +1,25 @@
+## Synopsis:
+##
+## .. code-block:: Nim
+##   import std / [os, posix]
+##   import selfpipe
+##
+##   var stop: bool
+##
+##   proc halt() =
+##     stop = true
+##
+##   var sigSet = newSigSet()
+##   sigSet.add(SIGINT, halt)
+##   if init(sigSet) != 0:
+##     quit("failed to initialize selfpipe", posix.errno)
+##   try:
+##     while not stop:
+##       sleep(1000)
+##       sigSet.checkSignal()
+##   finally:
+##     finish()
+
 import std / [posix, strutils, tables]
 
 const bsize: cint = 2 # selfpipe read buffer size
