@@ -18,19 +18,22 @@ when compileOption("threads") and defined(selfpipe_thread):
     loggers = cast[ptr seq[Logger]](allocShared0(sizeof(seq[Logger])))
 
   proc monitorSignals(sigSet: SigSet) {.thread.} =
-    for logger in loggers[]: addHandler(logger)
+    for logger in loggers[]:
+      addHandler(logger)
     while true:
       var buf: array[bsize, char]
       let r = read(pipefds[][0], addr buf, bsize)
       if r > 0:
         var s: string
         for x in buf:
-          if x == '\x00': break
-          s &= x
+          if x == '\x00':
+            break
+          s.add x
         let sig = cint(parseInt(s))
         if sigSet.hasKey(sig):
           sigSet[sig]()
-      elif r == 0: break
+      elif r == 0:
+        break
 
   proc registerLogger*(logger: Logger) =
     ## Register logger to be used in the signal monitoring thread.
@@ -47,8 +50,9 @@ else:
         if r > 0:
           var s: string
           for x in buf:
-            if x == '\x00': break
-            s &= x
+            if x == '\x00':
+              break
+            s.add x
           let sig = cint(parseInt(s))
           if sigSet.hasKey(sig):
             sigSet[sig]()
@@ -63,7 +67,8 @@ proc add*(sigSet: SigSet, sig: cint, p: SigProc) =
 
 proc sendSignal*(sig: cint) =
   ## Send signal internally. Does not trigger the signal handler.
-  if pipefds[][0] == 0: raise newException(Defect, "sendSignal called before init")
+  if pipefds[][0] == 0:
+    raise newException(Defect, "sendSignal called before init")
   discard write(pipefds[][1], cstring($sig), cint(len($sig)))
 
 proc init*(sigSet: sink SigSet): cint =
@@ -71,7 +76,8 @@ proc init*(sigSet: sink SigSet): cint =
   ##
   ## Returns 0 on success, else `errno` from the operation that failed (pipe or
   ## fcntl).
-  if pipefds[][0] != 0: raise newException(Defect, "init called after init")
+  if pipefds[][0] != 0:
+    raise newException(Defect, "init called after init")
   if pipe(pipefds[]) == -1:
     return posix.errno
   if fcntl(pipefds[][0], F_SETFD, O_NONBLOCK) == -1 or
