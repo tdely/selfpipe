@@ -47,8 +47,22 @@ proc checkSignals*(sigSet: SigSet) =
             break
           s.add x
         let sig = cint(parseInt(s))
-        if sigSet.hasKey(sig):
-          sigSet[sig]()
+        if sigset[].hasKey(sig):
+          sigset[][sig]()
+
+proc monitorSignals*(sigSet: SigSet) {.thread.} =
+  ## Check if signals have been received and execute corresponding `SigProc`.
+  ## Does not return until pipe is closed. For use as dedicated thread.
+  var buf: array[bsize, char]
+  while read(pipefds[][0], addr buf, bsize) > 0:
+    var s: string
+    for x in buf:
+      if x == '\x00':
+        break
+      s.add x
+    let sig = cint(parseInt(s))
+    if sigSet.hasKey(sig):
+      sigSet[sig]()
 
 proc newSigSet*(): SigSet =
   ## Create a new `SigSet`.
