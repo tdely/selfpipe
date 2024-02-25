@@ -16,7 +16,7 @@
 ##   try:
 ##     while not stop:
 ##       sleep(1000)
-##       sigSet.checkSignal()
+##       sigSet.checkSignals()
 ##   finally:
 ##     finish()
 
@@ -35,13 +35,12 @@ var pipefds = cast[ptr array[2, cint]](allocShared0(sizeof(array[2, cint])))
 
 var pollfd: TPollfd
 
-proc checkSignal*(sigSet: SigSet) =
-  ## Check if signal has been received and execute corresponding `SigProc`.
+proc checkSignals*(sigSet: SigSet) =
+  ## Check if signals have been received and execute corresponding `SigProc`.
   var buf: array[bsize, char]
-  if poll(addr pollfd, 1, 0) > 0:
+  while poll(addr pollfd, 1, 0) > 0:
     if pollfd.revents == POLLIN:
-      let r = read(pipefds[][0], addr buf, bsize)
-      if r > 0:
+      if read(pipefds[][0], addr buf, bsize) > 0:
         var s: string
         for x in buf:
           if x == '\x00':
