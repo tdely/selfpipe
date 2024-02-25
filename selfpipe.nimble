@@ -1,7 +1,7 @@
 # Package
 version = "0.1.0"
 author = "Tobias Dély"
-description = "Selfpipe library"
+description = "Easy safe signal handling"
 license = "MIT"
 
 # Dependencies
