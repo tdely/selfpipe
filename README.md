@@ -13,7 +13,7 @@ start listening for the signals, then call `checkSignals()` where you want to
 handle the signals.
 
 ```nim
-import std / [os, posix]
+import std/os
 import selfpipe
 
 var stop: bool
@@ -22,8 +22,8 @@ proc halt() =
   stop = true
 
 addSignal(SIGINT, halt)
-if init() != 0:
-  quit("failed to initialize selfpipe", posix.errno)
+if (let e = init(); e != 0):
+  quit("failed to initialize selfpipe", e)
 try:
   while not stop:
     sleep(1000)
