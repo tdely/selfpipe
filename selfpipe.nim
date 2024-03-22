@@ -1,7 +1,7 @@
 ## Synopsis:
 ##
 ## .. code-block:: Nim
-##   import std/os
+##   import std/[posix, os]
 ##   import selfpipe
 ##
 ##   var stop: bool

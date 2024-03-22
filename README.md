@@ -13,7 +13,7 @@ start listening for the signals, then call `checkSignals()` where you want to
 handle the signals.
 
 ```nim
-import std/os
+import std/[posix, os]
 import selfpipe
 
 var stop: bool
